@@ -1,0 +1,40 @@
+recap:
+- Forwardpassing
+- ReLu is 7 times faster to converge than sigmoid
+- Back propegation
+ - $w^T_ng(w^T_{n-1}g(w^T_{n-2}g(...(w^T_{1}g(x)))))$
+ - $f_k(x) = w^T_{k}g(f_{k-1}(x)), f_0(x) = x$
+
+We program in an object oriented manner:
+- each layer is a class
+ - each neuron is an instance
+
+\begin{minted}[c]
+class Neuron{
+	bool activate(input);
+}
+class Layer{
+	forward(input);
+	backward(back_prop_gradient);
+	Neuron * neuron_list;
+}
+\end{minted}
+* multiple input and multiple output
+\[\frax{\partial E}{\partial f_{k-1}} = \frac{\partial E}{\partial f_{k+1}} \frac{\partial f_{k+1}}{\partial f_{k_1}} \frac{\partial f_{k_1}}{\partial f_{k-1}} + 
+\frac{\partial E}{\partial f_{k+1}} \frac{\partial f_{k+1}}{\partial f_{k_2}} \frac{\partial f_{k_2}}{\partial f_{k-1}}\]
+* the order which they are shown are the order of the layers interacting
+
+- 3 hidden layers should be enough
+- any non cyclic graph could be turned into a CNN
+ - we don't want cycles (then we can't compute gradient)
+ 
+* softmax essentially takes the softer maximum of the two
+ - it returns majority of the maximum and adds a small part of the smaller one.
+ - This allows us to diffrentiate where argmax is not differentiable
+
+Check Subgradient -> only works for convex functions
+All neural network problems with ReLu are subgradient
+
+- Similar to gradient decent
+
+Universal aproximation Theorem

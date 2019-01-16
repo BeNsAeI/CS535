@@ -1,0 +1,42 @@
+- Deep learning is here to solve the problem that ML does not provide feaqtures
+
+
+Deep learning:
+- It will come up with the features automatically
+- ML + feature extraction
+- it is ML on several different levels
+
+Handwriting problem:
+- MNIST DB
+ - 60 k training examples
+ - 10k tests
+ - in 90s
+
+Bit of history:
+- Perceptron was first NN ever introduced in a CS context
+ - We needed a continuous version of sign function $\rightarrow$ Sigmoid
+ - Sigmoid convers $-\infty$ to $\infty$
+ - update: $\epsilon * x_i$
+ - Linear classifiers can't solve XOR problem
+ - Perceptron became dorment for another 10 years
+- Expert systems and rule based systems $\rightarrow$ Deep rules
+- Non linear ndural nets
+ - input layer, hidden layers, output layer
+ - each layer is activation on top of a linear combination of input
+ - now we can solve XOR problem
+ - Universal approximators
+ - poor efficiency and performance optimization
+ - issues with back propegation:
+  - over fitting
+  - slow
+  - difficult to track
+- Kernel methods
+ - Fix basis functions
+ - Proven to do the same thing as a single layer neural net
+ - mor efficient and faster
+ - learning a linear function leads to a non linear classifier!
+ - It was called Support Vector Networks (SVN) just to get published
+ - Issue: finding the right kernels
+- Stocastic gradient decent
+ - compute gradient on a smaller subset of the data
+

@@ -1,0 +1,57 @@
+- Convolutional networks:
+ - Small filters are applied repeatedly
+ - works well with images due to repetetive nature of images
+  - Called: Translation invariance
+   - Moving a block will not change its property
+  - We use domain knowledge to extract features
+
+- Recurrenting Neural networks
+ - Temporal stability: things repeat themselves
+ - share parameters accross time
+ - also known as temporal invariance
+ - there is a new weight between each net state that gets carried over
+
+- What is the data:
+ - what are the hidden assumptions
+ - what are the knowledge about that problem that creates the said features
+ - what is the invariance
+
+Optimization:
+- Deep learning uses simple optimizations of sums of errors with regularization term $\Omega()$:
+\[min_w \sum^n_i L(f_w(x_i),y_i) + \Omega(w)\]
+- This problem is a function of w
+- we are trying to minimize loss as a function of weigths
+- we use gradient with condition $\grad f(w) = 0$
+- if f(w) is convex, we can find an optimality, otherwise, our features are not sufficient
+
+Gradient:
+- $\grad w^Tx = x$
+
+Gradient Decent:
+- while $||\grad f(w) || > \epsilon$
+ - $w = w - \alpha \grad f(w)$
+- $\alpha$: Learning rate, stepsize
+- we only use the gradient to figure out which direction we are moving to
+- $\alpha$ is step size and needs to be small enough to converge
+- problem, step size is too large, you will diverge, too small and it will take too long to converge
+ - solutions: data normalization
+ - automaticly find the largest $\alpha$ that would still converge
+- Problem oscilation: we keep moving between 2 points without making any progress
+ - We still need an even smaller step size
+
+Hessian:
+- 2nd partial derivative matrix
+- we use second order taylor expantions (gives us a quadratic approximation)
+- Question, is the extention of Taylor expansion a hyper parameter?
+- answer: No, we can compute how far to expand
+
+Newton direction method:
+- $w = w - \alpha d$
+- where $d = [\grad^2 f(w)]^{-1}\grad f(w)$
+- Problem: it is very slow
+- Variants:
+ - Quasi-Newton: approximation of Hessian
+ - limitted memory quasi-Newton
+ - Barzilai-Borwein (Just use the diagnal)
+
+* generally in DL we just use batch normalization to simplify the problem
