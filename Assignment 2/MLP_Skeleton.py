@@ -103,7 +103,7 @@ if __name__ == '__main__':
       data = pickle.load(open('cifar_2class_py2.p', 'rb'))
    else:
       data = pickle.load(open('cifar_2class_py2.p', 'rb'), encoding='bytes')
-
+   print(data.get('train_data'))
    train_x = data['train_data']
    train_y = data['train_labels']
    test_x = data['test_data']
