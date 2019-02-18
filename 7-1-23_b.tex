@@ -1,0 +1,46 @@
+Example momentom:
+\[w = \frac{1}{2}w^2\]
+\[D_0 = 0\]
+\[D_{t+1} = \mu D_t - \alpha \nabla_t\]
+\[W_{t+1} = W_t + D_{t+1}\]
+* $\mu$ is generrally some value between $0.6$ and $0.9$, but it could be any value between $0$ and $1$.
+
+Normalization:
+- subtract mean and devide by STD
+ - this is called 0 mean, 1 STD
+- use L2 regularization
+- Use momentom
+
+Weight initialization:
+- Do not use w = 0
+ - (This causes us to get stuck in a local optima)
+- in High-dimentional space, every random vector is almost always orthogonal to eachother
+- pick 2 random, norm 1 vectors $x_1$ and $x_2$, then the probability that:
+\[cos(x_1,x_2) = |x^T_1x_2|\geq \sqrt(\frac{\log p}{p})\]
+  is less than $\frac{1}{p}$.
+- STD can be set to $\frac{2}{d}$
+ - d is the number of output dimentions
+
+- Stocastic mini-batch normalization:
+ - we select non unique batches of data
+ - each iteration (is iteration on 1 batch)
+  - we compute sum of gradients of that batchs
+  - Compute weight change
+  - apply it to all members of that batch
+  - when all iterations are done, epoch is done
+ - repeat until computed energy(objective) and error for training and validation meet expectation
+
+* For CV you can get away with training loss alone
+* make sure to apply the same normalization to all data: training, validation, etc
+
+Data Augmentation:
+- create artificial data to increase data
+ - in images:
+  - randomly crop
+  - flip
+  - transform
+  - translate
+  - destortion (small random vector at each pixel and move it by that small random vector)
+  - add noise
+  - Use generative AI models to augment data
+   - Deep fakes

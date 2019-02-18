@@ -1,0 +1,59 @@
+K timesteps:
+- Propegation sum
+- the problem with $W^k$ is that, it would have a very hectic behavior
+
+Long short-term memory
+- Vanila RNN has voletile memory
+ - (memory is passed from node to node on the same level)
+- LSTM is aiming to remember this memory for a longer time (dampen the decay of the effect of the gradient)
+\[h_t = tanh(Wh_{t-1} + Ux_t + b)\]
+\[c_t = c_{t-1} + tanh(Wy_{t-1} + Ux_t + b)\]
+- the term $c_{t-1}$ contains all other prior $c$s
+ - Problem is we will remember everything for too long
+ - another problem is that this term gets too large too fast
+ - a solution could be to simulate and average effect by adding a constant multiplier totanh() function
+ - another solution is adaptive weight (introduce forgetfulness)
+
+- Forget gate
+\[c_t = f_t \bigodot c_{t-1} + z_t\]
+\[z_t = tanh(Wy_{t-1} + Ux_t + b)\]
+ - circle dot ($\bigodot$ or big O dot): dimentional product
+ - we train $f_t$
+\[f_t = \sigma (W_fx_t + R_fy_{t-1} + p_f \bigodot c_{t-1} + b_f)\]
+  - how much we forget is based on Previous output
+  - current input
+  - previous memory
+
+- Input modulation:
+ - memory is supposed to be persistent
+ - we need to decide if piece of memory is important or not
+ - Input gate:
+\[i_t = \sigma (W_ix_t + R_iy_{t-1} + p_i \bigodot c_{t-1} + b_i)\]
+ - memory update becomes:
+\[c_t = i_t \bigodot z_t + f_t \bigodot c_{t-1}\]
+
+- Optional: Output modulation:
+ - don't always tell what w eremember, we hide things that we remember:
+\[o_t = \sigma (W_ox_t + R_oy_{t-1} + p_o \bigodot c_{t-1} + b_o)\]
+\[y_t = o_t \bigodot h(c_t)\]
+
+* overal equatiosn for LSTM:
+\[z_t = g(W_zx_t + R_zy_{t-1} + b_z)\]
+\[i_t = \sigma (W_ix_t + R_iy_{t-1} + p_i \bigodot c_{t-1} + b_i)\]
+\[f_t = \sigma (W_fx_t + R_fy_{t-1} + p_f \bigodot c_{t-1} + b_f)\]
+\[c_t = i_t \bigodot z_t + f_t \bigodot c_{t-1\]
+\[o_t = \sigma (W_ox_t + R_oy_{t-1} + p_o \bigodot c_{t-1} + b_o)\]
+\[y_t = o_t \bigodot h(c_t)\]
+
+Use cases of LSTM:
+- Speech recognition
+ - It has stream of data coming in
+ - it needs to be real time
+- Pen Trajectory
+ - it learns to fake hand writing
+
+Bi-directional LSTM:
+- This is no longer a realtime sequential mode 
+
+Recurrent Mixture Density Networks:
+- Normal destribution of probability of a class being correct at any given time and input

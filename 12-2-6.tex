@@ -1,0 +1,67 @@
+Re-construction error:
+- input to code, code to out put, test input vs output error
+- Auto encoders
+- could be used for unsupervised learning
+
+- We can use this to encode an image to 32 bit or 256 bit code
+ - retreive similar images by least distance
+
+GANs: Generative Adverserial Networks
+- Generator generates and image
+- A new network learns to descreminate against generated image compared to real image
+- Train the generator to improve the score of fake (constructed) image on the descriminator
+- We are trying to fool the descriminator
+- This will help the Auto-encoder to make sharper images encoded in 256-bits
+* use this to encode images without losing clarity
+- Loss functions:
+ - Descriminator: Look at the slides
+  \[J(\Theta, \Theta) = \frac{1}{2}\math{E}...\]
+
+RNN:
+- Input sequence
+- Output sequence
+- Translation
+- Take image and convert it to images
+- take word description and convert it to images
+- Data could be expressed in:
+ - sequential models
+  - one to one
+  - one to many
+  - many to one
+  - many to many
+ - Temporal models: at each moment in time a new otterance is said
+  - Speech
+  - Stock marker
+ - Text model
+
+Prior work:
+- Autoregressive models
+ - Predict current state by looking at last n states
+ - Neural autoregressive
+- Hiddeen Markov model:
+ - Observation as a sequence
+
+Recurrent Neural Networks;
+- Turing complete
+- Vanila:
+ - $a_t = b + Wh_{t-1} + Ux_t$
+  - $h_t = tanh(a_t)$
+  - $y_t = c + Vh_t$
+  - U: transition weight from input
+  - W: transition weight between same layer neurons
+  - V: transition weight to the output
+  - All Us are the same
+ - Initial weight W could be a trainable bias or just simply 0
+
+Example of RNN: Look at slides
+- Adding all the inputs
+- Two dimentional input example
+* RNN can estimate FSMs
+
+Train RNN: Look at the slides
+- Forward pass is simple:
+ - $a_t = b + Wh_{t-1} + Ux_t$
+  - $h_t = tanh(a_t)$
+  - $y_t = c + Vh_t$
+- Back propegation is not:
+ - $\frac{\partial E}{\pratial w} = \frac{\partial E}{\pratial h} + ...$

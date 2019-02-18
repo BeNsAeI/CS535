@@ -1,0 +1,17 @@
+Learning rate:
+- We would like to start with a large llearning rate and gradually reduce it
+
+Question: a different technique for gradient decent?
+- Use center center of the distance between point a and b
+- selectively adjust \alpha
+
+Weight decay regularization:
+- $G = G + \lambda W$
+- early stopping also helps
+
+Momentom:
+- instead of running gradient decent, have a direction and an inertia
+- $D_0 = 0$
+- $D_{t+1} = \mu D_t - \alpha G_t$
+- $W_{t+1} = W_t + D_{t+1}$
+- $\mu = 0.6~0.9$, a lot of inertia in optimization

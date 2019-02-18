@@ -1,0 +1,16 @@
+- Convolutional layers maintain image feature and preserve a lot of information
+- Task of convolutional layers are to come up with features
+
+Masking optimization: 
+- $I_0$ is the image 
+- $M is the mask$ 
+- $f_c(x)$ is the deep network: 
+\[argmin_M F_c(i_0,M) = f_c(\Phi(I_0,M)) + g(M))\]
+
+Deconvolution and un-pooling:
+- For max-pooling re-construction we do un-pooling
+
+U-Net:
+- Add linkage between  conv and ddeconv layers with same resolution
+- improves spacial precision and helps at boundries
+

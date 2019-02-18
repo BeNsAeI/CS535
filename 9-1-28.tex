@@ -1,0 +1,15 @@
+VGG network:
+- Conv, conv, pool
+- FC, FC, FC
+- Softmax
+
+Max pooling:
+- Max pooling of 2, reduces the size of the image by half
+- size of pooling stride dictates the length of resulting image.
+- it actually has less chance of promoting noise than original image (there is a chance that the maximum is noise, but if noise is uniformly low, the probability of having noise does not change)
+- Non smooth function and it has no gradient
+- it is pointwise max and convex, it has sub-gradient
+- 
+
+- Max pooling generally has a very small edge (about 1\% or so better)
+
