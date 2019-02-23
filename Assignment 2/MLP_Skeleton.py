@@ -23,10 +23,7 @@ class LinearTransform(object):
 		self.b = b
 
 	def forward(self, x):
-		# DEFINE forward function
-		#print([x, self.w, self.b])
-		#print(x)
-		return np.dot(x,self.w) + self.b
+		return self.w.T.dot(x)+ self.b
 
 	def backward(
 		self,
@@ -58,8 +55,7 @@ class ReLU(object):
 		# DEFINE backward function
 		x = np.copy(grad_output)
 		x[x > 0] = 1
-		x[x == 0] = 0
-		x[x < 0] = 0
+		x[x <= 0] = 0
 		return x
 
 
@@ -69,32 +65,45 @@ class ReLU(object):
 # this is put into a single layer is because it has a simple gradient form
 class SigmoidCrossEntropy(object):
 	def __init__(self):
-		self.w1 = None
-		self.w2 = None
-		self.b1 = None
-		self.b2 = None
-		self.hidden = None
-		self.output = None
-		self.fwd = None
+		#self.y = 0
 		self.x = None
-		self.y_star = None
 		self.L1_LT = None
 		self.L2_LT = None
 		self.ReLU = ReLU()
 
-
 	def forward(self, x):
 		# DEFINE forward function
 		self.x = x
-		self.hidden = self.ReLU.forward(self.L1_LT.forward(self.x))
-		self.output = 1 / (1 + np.exp(-self.L2_LT.forward(self.hidden)))
-		#print(-self.L2_LT.forward(self.hidden))
-		#print(self.output)
-		self.fwd = self.y_star * np.log(self.output)+(1-self.y_star)*np.log(1-self.output)
-		return self.fwd
+		self.net_1 = self.L1_LT.forward(x)
+		self.a_1 = self.ReLU.forward(self.net_1)
+		self.net_2 = self.L2_LT.forward(self.a_1.T)
+		self.a_2 = self.sigmoid(self.net_2)
+		if(self.a_2+0 != self.a_2):
+			print("Error: \"NaN\" encountered")
+			print("net 1: ",self.net_1)
+			print("ReLU: ",self.a_1)
+			print("net 2:",self.net_2)
+			print("sigmoid:", self.a_2)
+			exit(1)
+		return 1 - self.a_2
 
-	def derivative(self,x):
-		return ((self.y_star - 1)*np.exp(x) + self.y_star) /(np.exp(x)+1)
+	def sigmoid(self,x):
+		return (1 / (1 + np.exp(-x)))
+
+	def sigmoid_p(self,x):
+		return (x * (1 - x))
+
+	def cross(self,y,x):
+		if x == 0 or x == 1:
+			return (x-y)*(x-y)
+		#return (x-y)*(x-y)
+		return (y * np.log(x) + (1- y) * np.log(1-x))
+
+	def cross_p(self,y,x):
+		if x == 0 or x == 1:
+			return (2 * (y-x))
+		#return (2 * (y-x))
+		return (x-y)/((x-1)*x)
 
 	def backward(
 		self,
@@ -104,46 +113,41 @@ class SigmoidCrossEntropy(object):
 		l2_penalty=0.0
 	):
 		# DEFINE backward function
-		w2_error = self.y_star - self.fwd
-#		print(self.output)
-#		delta_w2 = w2_error * self.derivative(self.output)
-#		print(self.L2_LT.forward(self.hidden))
-#		print(self.w1[0])
-		delta_w2 = w2_error * (self.output * (1 - self.output))
-		w1_error = self.output * self.w2
-		delta_w1 = w1_error * self.ReLU.backward(self.hidden)
-		self.w2+= learning_rate *delta_w2 * self.hidden
-		tmp_x = (np.copy(self.x))[np.newaxis]
-		self.w1 += learning_rate * tmp_x.T.dot(delta_w1[np.newaxis])
-		if self.w2[0]/1 != self.w2[0]:
-			print("log:")
-			print(self.output)
-			print(w1_error)
-			print(delta_w1)
-			print(self.L1_LT.w)
-			print(self.L1_LT.forward(self.x))
-			print(self.hidden)
-			print(-self.L2_LT.forward(self.hidden))
-			print(self.output)
-			exit(1)
-		self.update_weights()
+		partial_2 = self.L2_LT.backward(self.a_1).T.dot(
+			self.cross_p(grad_output,self.a_2).dot(
+				self.sigmoid_p(self.a_2)
+			)
+		)
+		d_w2 = learning_rate * partial_2
+
+		partial_1 = np.dot(self.x[np.newaxis].T,
+			np.dot(
+				self.cross_p(grad_output,self.a_2)*self.sigmoid_p(self.a_2),
+				self.L2_LT.w.T
+			)*(self.ReLU.backward(self.a_1))
+		)
+		d_w1 = learning_rate * partial_1
+		#if (True in (d_w2 < 0)):
+		#	print(d_w2)
+		#	exit(1)
+		#if (True in (d_w1 < 0)):
+		#	print(d_w1)
+		#	exit(1)
+		self.L2_LT.w += d_w2
+		self.L1_LT.w += d_w1
 
 
 # ADD other operations and data entries in SigmoidCrossEntropy if needed
-	def set_y(self, y_star):
-		self.y_star = y_star
-
-	def update_weights(self):
-		self.L1_LT.update_weights(self.w1)
-		self.L2_LT.update_weights(self.w2)
+	#def set_y(self, y):
+	#	self.y = y
 
 	def set_parameters(self,hidden_units,dims):
-		self.w1 = np.random.rand(dims,hidden_units)
-		self.w2 = np.random.rand(hidden_units)
-		self.b1 = np.random.rand(hidden_units)
-		self.b2 = np.random.rand(1)
-		self.L1_LT = LinearTransform(self.w1,self.b1)
-		self.L2_LT = LinearTransform(self.w2,self.b2)
+		w1 = np.random.rand(dims,hidden_units)
+		w2 = np.random.rand(hidden_units,1)
+		b1 = np.random.rand(1,hidden_units)
+		b2 = np.random.rand(1,1)
+		self.L1_LT = LinearTransform(w1,b1)
+		self.L2_LT = LinearTransform(w2,b2)
 
 
 # This is a class for the Multilayer perceptron
@@ -165,21 +169,24 @@ class MLP(object):
 		l2_penalty,
 	):
 		# INSERT CODE for training the network
+		error = 0
 		for i in range(0,y_batch.shape[0]):
-			self.model.set_y(y_batch[i])
-			self.model.forward(x_batch[i])
-			self.model.backward(x_batch[i], learning_rate, momentum,l2_penalty,)
+			#self.model.set_y(y_batch[i])
+			y_hat = self.model.forward(x_batch[i])
+			error = self.model.cross(y_batch[i],y_hat)
+			self.model.backward(y_batch[i], learning_rate, momentum,l2_penalty,)
 	def evaluate(self, x, y):
 		# INSERT CODE for testing the network
 		result = 0
 		for i in range(0,y.shape[0]):
 			output = self.model.forward(x[i])
-			print(output)
-			if (y[i] == 1 and output > 0.5) or (y[i] == 0 and output < 0.5):
+			#print(output)
+			if (y[i] == 1 and output > 0.5) or (y[i] == 0 and output <= 0.5):
 				result += 1
 			#print ([y[i], output, (y[i] > 0.5 and output > 0.5) or (y[i] < 0.5 and output < 0.5)], result)
-		print([result, y.shape[0],result/y.shape[0]])
-		return result/y.shape[0]
+		#print([result, y.shape[0],result/y.shape[0]])
+		error = result/y.shape[0]
+		return error, 1-error
 
 # ADD other operations and data entries in MLP if needed
 if __name__ == '__main__':
@@ -188,10 +195,15 @@ if __name__ == '__main__':
 	else:
 		data = pickle.load(open('cifar_2class_py2.p', 'rb'), encoding='bytes')
 	print(data.get('train_data'))
-	norm = 1000000
-	train_x = np.true_divide(data['train_data'],norm)
+	Lambda = 1.0
+	if(len(sys.argv) > 1):
+		print("Number of arguments detected: ", len(sys.argv))
+		Lambda = float(sys.argv[1])
+		print("Learning rate set to:", Lambda)
+	norm = np.linalg.norm(data['train_data'])
+	train_x = data['train_data']/norm
 	train_y = data['train_labels']
-	test_x = np.true_divide(data['test_data'],norm)
+	test_x = data['test_data']/norm
 	test_y = data['test_labels']
 
 	#Variables:
@@ -201,11 +213,10 @@ if __name__ == '__main__':
 	test_accuracy = 0
 
 	#Hyper parameters:
-	num_epochs = 10
+	num_epochs = 20
 	num_batches = 1000
 	num_examples, input_dims = train_x.shape
 	hidden_units = 5
-
 	#Objects:
 	mlp = MLP(input_dims, hidden_units)
 
@@ -216,9 +227,9 @@ if __name__ == '__main__':
 	for epoch in xrange(num_epochs):
 
 		# INSERT YOUR CODE FOR EACH EPOCH HERE
-		mlp.train(train_x, train_y, 0.0125,0,0)
-		train_loss = mlp.evaluate(train_x, train_y)
-		test_loss = mlp.evaluate(test_x, test_y)
+		mlp.train(train_x, train_y, Lambda,0,0)
+		train_loss,train_accuracy  = mlp.evaluate(train_x, train_y)
+		test_loss,test_accuracy  = mlp.evaluate(test_x, test_y)
 		for b in xrange(num_batches):
 			total_loss = 0.0
 			# INSERT YOUR CODE FOR EACH MINI_BATCH HERE
