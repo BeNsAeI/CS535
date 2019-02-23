@@ -1,0 +1,12 @@
+/data/*
+/data/cifar-10-batches-py/*
+/data/cifar-10-python.tar.gz
+/data/sets/*
+/data/sets/liberty/*
+/data/sets/notredame/*
+/data/sets/yosemite/*
+/data/sets/*.pt
+/data/**/*.pt
+/data/**/*.bmp
+/data/**/*.txt
+/data/**/*.db
